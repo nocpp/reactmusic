@@ -5,7 +5,7 @@ function Home(props) {
     const { route } = props;
     
     return <div>
-        <h1>Home</h1>
+        <h1>Home 主页</h1>
         { renderRoutes(route.routes) }
     </div>;
 }
