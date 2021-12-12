@@ -5,30 +5,36 @@ import { Content } from "./style";
 import Scroll from "../../components/scroll";
 import { connect } from "react-redux";
 import * as actionCreators from './store/actionCreators';
+import { forceCheck } from "react-lazyload";
+import Loading from "../../baseUI/loading";
 
 function Recommend(props) {
     const { bannerList, recommendList } = props;
-    const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
+    const { getBannerDataDispatch, getRecommendListDataDispatch, enterLoading } = props;
 
     useEffect(() => {
-        getBannerDataDispatch();
-        getRecommendListDataDispatch();
+        if (!bannerList.size) {
+            getBannerDataDispatch();
+        }
+        
+        if (!recommendList.size) {
+            getRecommendListDataDispatch();
+        }
         //eslint-disable-next-line
     }, []);
-
-    console.log(recommendList);
 
     const bannerListJS = bannerList ? bannerList.toJS() : [];
     const recommendListJS = recommendList ? recommendList.toJS() : [];
 
     return (
         <Content>
-            <Scroll className="list">
+            <Scroll className="list" onScroll={forceCheck}>
                 <div>
                     <Slider bannerList={bannerListJS} />
                     <RecommendList recommendList={recommendListJS}></RecommendList> 
                 </div>
             </Scroll>
+            { enterLoading ? <Loading></Loading> : null }
         </Content>
     );
 }
@@ -37,7 +43,8 @@ function Recommend(props) {
 const mapStateToProps = (state) => {
     return {
         bannerList: state.recommend.get('bannerList'),
-        recommendList: state.recommend.get('recommendList')
+        recommendList: state.recommend.get('recommendList'),
+        enterLoading: state.recommend.get('enterLoading')
     };
 };
 
